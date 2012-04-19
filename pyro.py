@@ -95,25 +95,25 @@ import re
 from subprocess import Popen, PIPE, STDOUT
 
 def isImage(text):
-        if re.match(r'^http.*\.(png|gif|jpg)$', str(text)):
-                return True
-        return False
+	if re.match(r'^http.*\.(png|gif|jpg)$', str(text)):
+		return True
+	return False
 
 def handleImage(url):
-        # requires convert, jp2a
-        # just catch all errors, if something went wrong just show url
-        try:
-                u = urllib2.urlopen(url).read()
-                if u:
-                        p = Popen('convert - jpg:-'.split(' '), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-                        stdout = p.communicate(input=u)[0]
-                        # higher forced width gives more "resolution", easier to grok image
-                        p = Popen('jp2a --width=100 -'.split(' '), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-                        msg = p.communicate(input=stdout)[0]
-        except Exception:
-                return url
-        else:
-                return msg + '\nsource: %s' % url
+	# requires convert, jp2a
+	# just catch all errors, if something went wrong just show url
+	try:
+		u = urllib2.urlopen(url).read()
+		if u:
+			p = Popen('convert - jpg:-'.split(' '), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+			stdout = p.communicate(input=u)[0]
+			# higher forced width gives more "resolution", easier to grok image
+			p = Popen('jp2a --width=100 -'.split(' '), stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+			msg = p.communicate(input=stdout)[0]
+	except Exception:
+		return url
+	else:
+		return msg + '\nsource: %s' % url
 ##################################################
 
 
@@ -134,8 +134,8 @@ def handleMsg(msg, notify=True): # expects a 37s json msg
 			username = users.get(userId, "Anonymous")
 			line += "<%s>" % username
 	if msgType == "TextMessage":
-                if isImage(msg['body']):
-                        msg['body'] = handleImage(msg['body'])
+		if isImage(msg['body']):
+			msg['body'] = handleImage(msg['body'])
 		indent = len(line) + 2
 		line += ": %s" % msg['body']
 		if notify and (ECHO_MESSAGES or msg.get('user_id') != selfUserId):
@@ -160,8 +160,8 @@ def handleMsg(msg, notify=True): # expects a 37s json msg
 		if notify:
 			notifyGrowl(username, msg['body'])
 	else:
-                if isImage(msg):
-                        msg = handleImage(msg)
+		if isImage(msg):
+			msg = handleImage(msg)
 		line += ": %r" % msg
 	chat.log(line, indent)
 
